@@ -135,4 +135,4 @@ router.delete("/student", function (req, res) {
   );
 });
 
-module.exports = router;
+module.exports = {router, dbConn};

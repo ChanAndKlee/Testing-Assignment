@@ -1,7 +1,7 @@
 const express = require("express"),
   app = express(),
   port = process.env.SERVICEPORT || 3000,
-  router = require("./routes/studentServiceRoutes");
+  {router, dbConn} = require("./routes/studentServiceRoutes");
 
 const dotenv = require("dotenv");
 dotenv.config();
