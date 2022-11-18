@@ -33,6 +33,27 @@ test("Test: Checking the inserted age", () => {
   expect(age).not.toBeFalsy();
 });
 
+test("Test: Delete student_id = 5", async () => {
+  const res = await request(app).delete("/student").send({ student_id: 5 });
+  expect(res.body).toEqual({
+    error: false,
+    data: 1,
+    message: "Student has been deleted successfully.",
+  });
+
+  // Restore the data
+  await request(app)
+    .post("/student")
+    .send({
+      student: {
+        STU_ID: 5,
+        STU_FNAME: "Christopher",
+        STU_LNAME: "Ellison",
+        STU_AGE: 25,
+      },
+    });
+});
+
 /**
  * Test Case ID: Fun_02
  * Test Case Type: Unit Testing
@@ -156,8 +177,10 @@ describe("Test: Adding a student, update the new student, and get the new studen
   test("Test: Get the information Kiriko via /student/:id", async () => {
     const res = await request(app).get(`/student/100`);
     expect(res.body.data).toEqual(kiriko);
+    
+    // Restore the database
+    await request(app).delete(`/student`).send({ student_id: 100 });
   });
-  
 });
 /**
  * Test Case ID: Fun_05
