@@ -1,4 +1,7 @@
+const axios = require('axios');
 const puppeteer = require("puppeteer");
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
 const express = require("express"),
   app = express(),
   { router, dbConn } = require("../routes/studentServiceRoutes"),
@@ -14,23 +17,36 @@ app.use("/", router);
 
 afterAll(() => {
   dbConn.end();
+  source.cancel('Operation canceled by the user.');
 });
+
+// Function to fetch students data from DB
+const functions = {
+  fetchPosts: () =>
+  axios.get("http://localhost:3000/students", {
+    cancelToken: source.token
+  })
+  .then((response) => response.data)
+  .catch((error) => error),
+};
 
 /**
  * Test Case ID: Fun_01
  * Test Case Type: Unit Testing
- * Test Case Title: Check the inserted age
- * Test Case Description:
- * - Check the age is greater than or equal to 18
- * - Check the age is truthiness (null, undefined, defined truthy, falsy)
- */
-test("Test: Checking the inserted age", () => {
-  const age = 23;
-  expect(age).toBeGreaterThanOrEqual(18);
-  expect(age).not.toBeNull();
-  expect(age).toBeDefined();
-  expect(age).toBeTruthy();
-  expect(age).not.toBeFalsy();
+ * Test Case Title: Check the firstname begin with the capital letter
+*/
+test("Test: Async/Await, the firstname should begin with the capital letter", async() => {
+  const posts = await functions.fetchPosts();
+  let regExp = /[A-Z]/;
+
+  for(let i = 0; i < Object.keys(posts.data).length; i++) {
+    data = posts.data[i].STU_FNAME;
+    let isMatch = regExp.test(data.charAt(0));
+
+    // Report where error
+    if (isMatch == false) console.log("Error at index [" + posts.data[i].STU_ID + "]: " + data);
+    expect(isMatch).not.toBeFalsy();
+  }
 });
 
 test("Test: Delete student_id = 5", async () => {
@@ -57,63 +73,20 @@ test("Test: Delete student_id = 5", async () => {
 /**
  * Test Case ID: Fun_02
  * Test Case Type: Unit Testing
- * Test Case Title: Check no duplicated name and Firstname starts with "Y" letter
- * Test Case Description: -
- */
-describe('Test: No duplicated name and Firstname starts with "Y" letter', () => {
-  const existing_firstname = [
-    "Albedo",
-    "Aloy",
-    "Amber",
-    "AratakiItto",
-    "Barabara",
-    "Beidou",
-    "Bennett",
-    "Candace",
-    "Chongyun",
-    "Collei",
-    "Cyno",
-    "Diluc",
-    "Diona",
-    "Dori",
-    "Eula",
-    "Fischl",
-    "Ganyu",
-    "Gorou",
-    "HuTao",
-    "Jean",
-    "Kazuha",
-    "Kaeya",
-    "Ayaka",
-    "Ayato",
-    "Keqing",
-    "Klee",
-    "Kujou",
-    "Kuki",
-    "Lisa",
-    "Nahida",
-  ];
-
-  const new_firstname = ["Yae", "Yelan", "YunJin"];
-
-  // Check new firstname with the existing
-  // Check new firstname begins with "Y" letter
-  it('"Does not Match with the existing firstname" and "Firstname begins with "Y" "', () => {
-    expect(new_firstname).not.toEqual(
-      expect.arrayContaining(existing_firstname)
-    );
-    expect(new_firstname.toString()).toMatch(/^Y/);
-  });
+ * Test Case Title: Check the age be lesser than 100
+*/
+test("Test: Async/Await, the age should be lesser than 100", async() => {
+  const posts = await functions.fetchPosts();
+  for(let i = 0; i < Object.keys(posts.data).length; i++) {
+    expect(posts.data[i].STU_AGE).toBeLessThan(100);
+  }
 });
 
 /**
  * Test Case ID: Fun_03
  * Test Case Type: Integration Testing
  * Test Case Title:
- * Test Case Description:
  */
-
-// (TO DO) Code
 describe("Test: Getting information of the first student in database with /students and /student/:id", () => {
   let firstStudent;
   test("Test: GET all students via /students", async () => {
@@ -136,10 +109,7 @@ describe("Test: Getting information of the first student in database with /stude
  * Test Case ID: Fun_04
  * Test Case Type: Integration Testing
  * Test Case Title:
- * Test Case Description:
  */
-
-// (TO DO) Code
 describe("Test: Adding a student, update the new student, and get the new student", () => {
   const kiriko = {
     STU_ID: 100,
@@ -182,6 +152,7 @@ describe("Test: Adding a student, update the new student, and get the new studen
     await request(app).delete(`/student`).send({ student_id: 100 });
   });
 });
+
 /**
  * Test Case ID: Fun_05
  * Test Case Type: System Testing
@@ -230,8 +201,6 @@ test("Test: Getting the information of student through the user interface.", asy
       age: document.getElementById("STU_AGE").value,
     };
   });
-
-  // console.log("The retrieved studentObject:", studentObject);
 
   expect(studentObject).toEqual({
     id: "80",
