@@ -186,11 +186,11 @@ test("System Test I: Update student information on the  database through the use
   });
 
   expect(studentObject).toEqual({
-    id: "80",
-    firstName: "Joseph",
-    lastName: "Joestar",
-    age: "23",
+    id: "1",
+    firstName: "Andrew",
+    lastName: "Blackberry",
+    age: "26",
   });
-
+  
   await browser.close();
 }, 20000);
