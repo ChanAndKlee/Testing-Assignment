@@ -1,3 +1,9 @@
+/**
+ * @testing_file (unit, integration, system)
+ * @author: 6388030 Kulawut   Makkamoltham
+ *          6388040 Ariya     Phengphon
+*/
+
 const puppeteer = require("puppeteer");
 const express = require("express"),
   app = express(),
@@ -93,8 +99,6 @@ describe("Integration Test I: Getting information of second student in database 
  * Test Case Type: Integration Testing
  * Test Case Title: Adding a student, update the new student, and get the new student
  */
-
-// (TO DO) Code
 describe("Integration Test II: Adding a student, update the new student, and get the new student", () => {
   const hanzo = {
     STU_ID: 100,
