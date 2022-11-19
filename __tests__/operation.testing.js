@@ -67,11 +67,9 @@ test("Unit Test II: Delete student_id = 5", async () => {
  * @Test
  * Test Case ID: Fun_03
  * Test Case Type: Integration Testing
- * Test Case Title:
+ * Test Case Title: Getting information of second student in database with /students and /student/:id
  */
-
-// (TO DO) Code
-describe("Integration Test II: Getting information of second student in database with /students and /student/:id", () => {
+describe("Integration Test I: Getting information of second student in database with /students and /student/:id", () => {
   let secondStudent;
   test("Test: GET all students via /students", async () => {
     const res = await request(app).get("/students");
@@ -93,11 +91,11 @@ describe("Integration Test II: Getting information of second student in database
  * @Test
  * Test Case ID: Fun_04
  * Test Case Type: Integration Testing
- * Test Case Title:
+ * Test Case Title: Adding a student, update the new student, and get the new student
  */
 
 // (TO DO) Code
-describe("Integration Test III: Adding a student, update the new student, and get the new student", () => {
+describe("Integration Test II: Adding a student, update the new student, and get the new student", () => {
   const hanzo = {
     STU_ID: 100,
     STU_FNAME: "hanzo",
@@ -144,9 +142,9 @@ describe("Integration Test III: Adding a student, update the new student, and ge
  * @Test
  * Test Case ID: Fun_05
  * Test Case Type: System Testing
- * Test Case Title: Update student information on the  database
+ * Test Case Title: Update student information on the  database through the user interface.
  */
-test("System Test I: Getting the information of student through the user interface.", async () => {
+test("System Test I: Update student information on the  database through the user interface.", async () => {
   // Create browser using puppeteer
   const browser = await puppeteer.launch({
     headless: false,
