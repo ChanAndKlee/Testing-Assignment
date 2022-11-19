@@ -69,21 +69,23 @@ test("Unit Test II: Delete student_id = 5", async () => {
  * Test Case Type: Integration Testing
  * Test Case Title:
  */
-describe("Integration Test II: Getting information of the first student in database with /students and /student/:id", () => {
-  let firstStudent;
+
+// (TO DO) Code
+describe("Integration Test II: Getting information of second student in database with /students and /student/:id", () => {
+  let secondStudent;
   test("Test: GET all students via /students", async () => {
     const res = await request(app).get("/students");
-    expect(res.body.data[0]).toEqual({
-      STU_ID: 1,
-      STU_FNAME: "Andrew",
-      STU_LNAME: "Black",
+    expect(res.body.data[1]).toEqual({
+      STU_ID: 2,
+      STU_FNAME: "Alexandra",
+      STU_LNAME: "Brown",
       STU_AGE: 25,
     });
-    firstStudent = res.body.data[0];
+    secondStudent = res.body.data[1];
   });
-  test("Test: Get the information of the first student via /student/:id", async () => {
-    const res = await request(app).get(`/student/${firstStudent.STU_ID}`);
-    expect(res.body.data).toEqual(firstStudent);
+  test("Test: Get the information of the second student via /student/:id", async () => {
+    const res = await request(app).get(`/student/${secondStudent.STU_ID}`);
+    expect(res.body.data).toEqual(secondStudent);
   });
 });
 
@@ -93,14 +95,16 @@ describe("Integration Test II: Getting information of the first student in datab
  * Test Case Type: Integration Testing
  * Test Case Title:
  */
+
+// (TO DO) Code
 describe("Integration Test III: Adding a student, update the new student, and get the new student", () => {
-  const kiriko = {
+  const hanzo = {
     STU_ID: 100,
-    STU_FNAME: "Kiriko",
-    STU_LNAME: "Kamori",
-    STU_AGE: 23,
+    STU_FNAME: "hanzo",
+    STU_LNAME: "Shimada",
+    STU_AGE: 38,
   };
-  test("Test: POST a new student via /students", async () => {
+  test("Test: POST a new student via /student", async () => {
     const res = await request(app)
       .post("/student")
       .send({
@@ -108,7 +112,7 @@ describe("Integration Test III: Adding a student, update the new student, and ge
           STU_ID: 100,
           STU_FNAME: "Genji",
           STU_LNAME: "Shimada",
-          STU_AGE: 25,
+          STU_AGE: 35,
         },
       });
     expect(res.body).toEqual({
@@ -117,9 +121,9 @@ describe("Integration Test III: Adding a student, update the new student, and ge
       message: "New student has been created successfully.",
     });
   });
-  test("Test: PUT student STU_FNAME and STU_LNAME via /students", async () => {
+  test("Test: PUT student STU_FNAME and STU_AGE via /student", async () => {
     const res = await request(app).put("/student").send({
-      student: kiriko,
+      student: hanzo,
     });
     expect(res.body).toEqual({
       data: 1,
@@ -127,12 +131,12 @@ describe("Integration Test III: Adding a student, update the new student, and ge
       message: "Student has been updated successfully.",
     });
   });
-  test("Test: Get the information Kiriko via /student/:id", async () => {
-    const res = await request(app).get(`/student/100`);
-    expect(res.body.data).toEqual(kiriko);
+  test("Test: Get the Hanzo information via /student/:id", async () => {
+    const res = await request(app).get(`/student/${hanzo.STU_ID}`);
+    expect(res.body.data).toEqual(hanzo);
     
-    // Restore the database
-    await request(app).delete(`/student`).send({ student_id: 100 });
+    // Restore the database (Delete the newly created student)
+    await request(app).delete(`/student`).send({ student_id: hanzo.STU_ID });
   });
 });
 
@@ -144,7 +148,11 @@ describe("Integration Test III: Adding a student, update the new student, and ge
  */
 test("System Test I: Getting the information of student through the user interface.", async () => {
   // Create browser using puppeteer
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: false,
+    slowMo: 5,
+    devtools: false,
+  });
   // Create a new page
   const page = await browser.newPage();
   // Set the page to the web location
