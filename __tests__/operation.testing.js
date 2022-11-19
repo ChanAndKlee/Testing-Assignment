@@ -158,16 +158,16 @@ test("System Test I: Update student information on the  database through the use
 
   // Click and type value into the textbox
   await page.click("input#STU_ID");
-  await page.type("input#STU_ID", "80");
+  await page.type("input#STU_ID", "1");
 
   await page.click("input#STU_FNAME");
-  await page.type("input#STU_FNAME", "Joseph");
+  await page.type("input#STU_FNAME", "Andrew");
 
   await page.click("input#STU_LNAME");
-  await page.type("input#STU_LNAME", "Joestar");
+  await page.type("input#STU_LNAME", "Blackberry");
 
   await page.click("input#STU_AGE");
-  await page.type("input#STU_AGE", "23");
+  await page.type("input#STU_AGE", "26");
 
   page.on("dialog", async (dialog) => {
     await dialog.accept();
