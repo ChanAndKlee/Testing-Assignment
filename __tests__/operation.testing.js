@@ -1,7 +1,4 @@
-const axios = require('axios');
 const puppeteer = require("puppeteer");
-const CancelToken = axios.CancelToken;
-const source = CancelToken.source();
 const express = require("express"),
   app = express(),
   { router, dbConn } = require("../routes/studentServiceRoutes"),
@@ -17,39 +14,35 @@ app.use("/", router);
 
 afterAll(() => {
   dbConn.end();
-  source.cancel('Operation canceled by the user.');
 });
 
-// Function to fetch students data from DB
-const functions = {
-  fetchPosts: () =>
-  axios.get("http://localhost:3000/students", {
-    cancelToken: source.token
-  })
-  .then((response) => response.data)
-  .catch((error) => error),
-};
-
 /**
- * Test Case ID: Fun_01
+ * @Test
+ * Test CaseID: Fun_01
  * Test Case Type: Unit Testing
- * Test Case Title: Check the firstname begin with the capital letter
+ * Test Case Title: Check First Name begin with a capital letter
 */
-test("Test: Async/Await, the firstname should begin with the capital letter", async() => {
-  const posts = await functions.fetchPosts();
+test("Unit Test I: Check First Name begin with a capital letter", async() => {
   let regExp = /[A-Z]/;
+  const res = await request(app).get("/students");
 
-  for(let i = 0; i < Object.keys(posts.data).length; i++) {
-    data = posts.data[i].STU_FNAME;
+  for(let i = 0; i < Object.keys(res.body.data).length; i++) {
+    data = res.body.data[i].STU_FNAME;
     let isMatch = regExp.test(data.charAt(0));
 
-    // Report where error
-    if (isMatch == false) console.log("Error at index [" + posts.data[i].STU_ID + "]: " + data);
+    // Report error location
+    if (isMatch == false) console.log("Error at index [" + res.body.data[i].STU_ID + "]: " + data);
     expect(isMatch).not.toBeFalsy();
   }
 });
 
-test("Test: Delete student_id = 5", async () => {
+/**
+ * @Test
+ * Test Case ID: Fun_02
+ * Test Case Type: Unit Testing
+ * Test Case Title: Delete student_id = 5
+*/
+test("Unit Test II: Delete student_id = 5", async () => {
   const res = await request(app).delete("/student").send({ student_id: 5 });
   expect(res.body).toEqual({
     error: false,
@@ -71,23 +64,12 @@ test("Test: Delete student_id = 5", async () => {
 });
 
 /**
- * Test Case ID: Fun_02
- * Test Case Type: Unit Testing
- * Test Case Title: Check the age be lesser than 100
-*/
-test("Test: Async/Await, the age should be lesser than 100", async() => {
-  const posts = await functions.fetchPosts();
-  for(let i = 0; i < Object.keys(posts.data).length; i++) {
-    expect(posts.data[i].STU_AGE).toBeLessThan(100);
-  }
-});
-
-/**
+ * @Test
  * Test Case ID: Fun_03
  * Test Case Type: Integration Testing
  * Test Case Title:
  */
-describe("Test: Getting information of the first student in database with /students and /student/:id", () => {
+describe("Integration Test II: Getting information of the first student in database with /students and /student/:id", () => {
   let firstStudent;
   test("Test: GET all students via /students", async () => {
     const res = await request(app).get("/students");
@@ -106,11 +88,12 @@ describe("Test: Getting information of the first student in database with /stude
 });
 
 /**
+ * @Test
  * Test Case ID: Fun_04
  * Test Case Type: Integration Testing
  * Test Case Title:
  */
-describe("Test: Adding a student, update the new student, and get the new student", () => {
+describe("Integration Test III: Adding a student, update the new student, and get the new student", () => {
   const kiriko = {
     STU_ID: 100,
     STU_FNAME: "Kiriko",
@@ -154,35 +137,29 @@ describe("Test: Adding a student, update the new student, and get the new studen
 });
 
 /**
+ * @Test
  * Test Case ID: Fun_05
  * Test Case Type: System Testing
  * Test Case Title: Update student information on the  database
- * Test Case Description:
- * - Test the Student Information page by inputting the Student ID, Student Firstname, Student Lastname, Student Age
- * to update the student information on the database.
  */
-test("Test: Getting the information of student through the user interface.", async () => {
+test("System Test I: Getting the information of student through the user interface.", async () => {
   // Create browser using puppeteer
-  const browser = await puppeteer.launch({
-    headless: false,
-    slowMo: 5,
-    devtools: false,
-  });
+  const browser = await puppeteer.launch();
   // Create a new page
   const page = await browser.newPage();
   // Set the page to the web location
   await page.goto("http://localhost:3100/");
 
-  // Click and type value "80" into the textbox STU_ID
+  // Click and type value into the textbox
   await page.click("input#STU_ID");
   await page.type("input#STU_ID", "80");
-  // Click and type value "Joseph" into the textbox STU_FNAME
+
   await page.click("input#STU_FNAME");
   await page.type("input#STU_FNAME", "Joseph");
-  // Click and type value "Joestar" into the textbox STU_LNAME
+
   await page.click("input#STU_LNAME");
   await page.type("input#STU_LNAME", "Joestar");
-  // Click and type value "23" into the textbox STU_AGE
+
   await page.click("input#STU_AGE");
   await page.type("input#STU_AGE", "23");
 
